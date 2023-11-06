@@ -1,0 +1,44 @@
+<!--index.wxml-->
+<view class="container">
+    <van-nav-bar
+        title="设置"
+        left-text="返回"
+        left-arrow
+        bind:click-left="onClickLeft"
+        class="topTab"
+    />
+    <van-cell-group class="inputItem">
+        <van-field
+            class="inputItem"
+            input-align="right"
+            type='number'
+            clearable
+            model:value="{{ interval }}"
+            label="间隔(分钟)"
+            placeholder="请输入间隔(分钟)"
+            border="{{ true }}"
+        />
+        <van-field
+            class="inputItem"
+            input-align="right"
+            type='number'
+            clearable
+            model:value="{{ numberOfReminders }}"
+            label="提醒次数"
+            placeholder="请输入提醒次数"
+            border="{{ false }}"
+        />
+        
+    </van-cell-group>
+    <view class="actionWrapper">
+        <van-button
+            block
+            type="info"
+            disabled="{{!interval || !numberOfReminders}}"
+            bindtap="handleSave"
+        >
+            保存
+        </van-button>
+    </view>
+    <van-toast id="van-toast" />
+</view>
