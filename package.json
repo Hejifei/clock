@@ -7,7 +7,8 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "@vant/weapp": "^1.11.1"
+    "@vant/weapp": "^1.11.1",
+    "moment": "^2.29.4"
   },
   "devDependencies": {
     "miniprogram-api-typings": "^3.12.1"

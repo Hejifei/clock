@@ -1,6 +1,19 @@
 <!--index.wxml-->
 <view class="container">
-    <!-- <van-count-down
+    <van-nav-bar
+        title="闹钟"
+        left-text="设置"
+        left-arrow
+        bind:click-left="onClickLeft"
+        class="topTab"
+    />
+    <view class="titleWrapper">
+        <text class="countDownLabel">目标: {{interval}}min/{{numberOfReminders}}次: </text>
+    </view>
+    <view class="titleWrapper">
+        <text class="countDownLabel">已执行: {{interval}}min/{{numberOfReminders - leftNumberOfReminders}}次: </text>
+    </view>
+    <van-count-down
         class="control-count-down"
         use-slot
         time="{{ time }}"
@@ -8,23 +21,39 @@
         bind:change="onChange"
         bind:finish="finished"
     >
-        <text class="countDownLabel">目标{{interval}}min/{{numberOfReminders}}次: </text>
-        <text class="countDownLabel">已执行{{interval}}min/{{numberOfReminders - leftNumberOfReminders}}次: </text>
-        <text class="item">{{ timeData.minutes }}</text>分
-        <text class="item">{{ timeData.seconds }}</text>秒
-    </van-count-down> -->
-    <van-count-down
+        
+        
+        <text class="item">{{ timeData.minutes || 0 }}</text>分
+        <text class="item">{{ timeData.seconds || 0 }}</text>秒
+    </van-count-down>
+    <!-- <van-count-down
         class="control-count-down"
         millisecond
         time="{{ time }}"
         auto-start="{{ false }}"
         format="ss:SSS"
         bind:finish="finished"
-    />
+    /> -->
     <van-grid clickable column-num="3">
         <van-grid-item text="开始" icon="play-circle-o" bindclick="start" />
         <van-grid-item text="暂停" icon="pause-circle-o" bindclick="pause" />
         <van-grid-item text="重置" icon="replay" bindclick="reset" />
     </van-grid>
+
+    <view>
+        <van-cell-group title="记录">
+            <van-cell
+                wx:for="{{recordList}}"
+                wx:key="time"
+                value="{{item.time}}"
+                title="第{{item.num}}次"
+                />
+        </van-cell-group>
+        <!-- <view wx:for="{{recordList}}" wx:key="time">
+            <text class="item">
+                {{item.time}}
+            </text>
+        </view> -->
+    </view>
     <van-toast id="van-toast" />
 </view>

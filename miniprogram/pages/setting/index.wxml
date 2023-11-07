@@ -26,6 +26,16 @@
             model:value="{{ numberOfReminders }}"
             label="提醒次数"
             placeholder="请输入提醒次数"
+            border="{{ true }}"
+        />
+        <van-field
+            class="inputItem"
+            input-align="right"
+            type='number'
+            clearable
+            model:value="{{ songPlaySeconds }}"
+            label="提示音播放时间(秒)"
+            placeholder="请输入提示音播放时间"
             border="{{ false }}"
         />
         
