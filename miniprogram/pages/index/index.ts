@@ -14,6 +14,13 @@ Page({
         timer: null,
         recordList: [],
         songPlaySeconds: 3,
+        dataList: [{
+            name: '',
+            timeListStr: '',
+            remark: '',
+        }],
+        columns: [],
+        activeIndex: 0,
     },
     // 事件处理函数
     bindViewTap() {
@@ -31,18 +38,29 @@ Page({
                     interval?: number
                     numberOfReminders?: number
                     songPlaySeconds?: number
+                    dataList?: {
+                        name: string
+                        timeListStr: string
+                        remark: string
+                    }[]
                 } = {}
                 try {
                     resObj = JSON.parse(res.data)
                 } catch (err) {
                     console.log(err)
                 }
+                const dataList = resObj?.dataList || []
+                const columns = dataList.map(item => ({
+                    text: `${item.name} 事件间隔:(${item.timeListStr})`
+                }))
                 that.setData({
                     interval: resObj?.interval || 10,
                     numberOfReminders: resObj?.numberOfReminders || 10,
                     leftNumberOfReminders: resObj?.numberOfReminders || 10,
                     time: (resObj?.interval || 10) * 60 * 1000,
                     songPlaySeconds: resObj?.songPlaySeconds || 10,
+                    dataList,
+                    columns,
                 })
             },
             fail(res) {
@@ -160,5 +178,17 @@ Page({
         wx.navigateTo({
             url: '/pages/setting/index',
         })
+    },
+    onConfirm(event) {
+        const { picker, value, index } = event.detail;
+        // Toast(`当前值：${value}, 当前索引：${index}`);
+        console.log({
+            value,
+            index,
+        })
+    },
+    
+    onCancel() {
+        Toast('取消');
     },
 })

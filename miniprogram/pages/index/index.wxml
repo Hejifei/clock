@@ -56,4 +56,12 @@
         </view> -->
     </view>
     <van-toast id="van-toast" />
+    <van-picker 
+        show-toolbar
+        title="标题"
+        columns="{{ columns }}"
+        bind:cancel="onCancel"
+        bind:confirm="onConfirm"
+        default-index="{{activeIndex}}"
+    />
 </view>

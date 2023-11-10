@@ -8,7 +8,7 @@
         class="topTab"
     />
     <van-cell-group class="inputItem">
-        <van-field
+        <!-- <van-field
             class="inputItem"
             input-align="right"
             type='number'
@@ -27,7 +27,7 @@
             label="提醒次数"
             placeholder="请输入提醒次数"
             border="{{ true }}"
-        />
+        /> -->
         <van-field
             class="inputItem"
             input-align="right"
@@ -40,6 +40,84 @@
         />
         
     </van-cell-group>
+
+    <view class="listWrapper">
+        <view class="list_title">
+            我的定时器列表
+            <van-button
+                size="small"
+                style="margin-left: auto;"
+                icon="plus"
+                type="primary"
+                bind:click="handleAddClick"
+            >
+                按钮
+            </van-button>
+        </view>
+        <van-swipe-cell
+            right-width="{{ 65 }}"
+            wx:for="{{dataList}}"
+            wx:key="idx"
+            wx:for-index="idx"
+            wx:for-item="item"
+        >
+            
+            <van-cell-group
+                custom-class="listItemWrapper"
+            >
+                <view class="listItemIndex">{{idx + 1}}</view>
+                <!-- <van-cell title="单元格" value="内容" /> -->
+                <van-field
+                    class="inputItem"
+                    input-align="right"
+                    clearable
+                    label="定时名称"
+                    placeholder="请输入定时名称"
+                    border="{{ true }}"
+                    value="{{ item.name }}"
+                    data-name="name"
+                    data-index="{{idx}}"
+                    bind:change="onInputChange"
+                />
+                <van-field
+                    class="inputItem"
+                    input-align="right"
+                    type='number'
+                    clearable
+                    label="间隔(分钟)"
+                    placeholder="请输入间隔(分钟)"
+                    border="{{ true }}"
+                    data-name="timeListStr"
+                    data-index="{{idx}}"
+                    value="{{ item.timeListStr }}"
+                    bind:change="onInputChange"
+                />
+                <van-field
+                    class="inputItem"
+                    input-align="right"
+                    type="textarea"
+                    autosize
+                    clearable
+                    label="备注"
+                    placeholder="请输入备注"
+                    border="{{ true }}"
+                    data-name="remark"
+                    data-index="{{idx}}"
+                    value="{{ item.remark }}"
+                    bind:change="onInputChange"
+                />
+            </van-cell-group>
+            <view
+                slot="right"
+                class="van-swipe-cell__right"
+                data-index="{{idx}}"
+                bind:tap="onDeleteClick"
+            >
+                删除
+            </view>
+        </van-swipe-cell>
+    </view>
+    
     <view class="actionWrapper">
         <van-button
             block

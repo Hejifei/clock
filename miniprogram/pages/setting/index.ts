@@ -8,6 +8,13 @@ Page({
         interval: 0,
         numberOfReminders: 0,
         songPlaySeconds: 0,
+        dataList: [
+            {
+                name: '1',
+                timeListStr: '',
+                remark: '',
+            },
+        ]
     },
     // 事件处理函数
     bindViewTap() {
@@ -24,6 +31,11 @@ Page({
                     interval?: number
                     numberOfReminders?: number
                     songPlaySeconds?: number
+                    dataList?: {
+                        name: string
+                        timeListStr: string
+                        remark: string
+                    }[]
                 } = {}
                 try {
                     resObj = JSON.parse(res.data)
@@ -34,6 +46,11 @@ Page({
                     interval: resObj?.interval || 10,
                     numberOfReminders: resObj?.numberOfReminders || 10,
                     songPlaySeconds: resObj?.songPlaySeconds || 10,
+                    dataList: resObj?.dataList || [{
+                        name: '',
+                        timeListStr: '',
+                        remark: '',
+                    }]
                 })
             },
             fail(res) {
@@ -52,13 +69,43 @@ Page({
         //     url: '/pages/index/index',
         // })
     },
+    onInputChange(event: any) {
+        const { index, name } = event.currentTarget.dataset
+        const value = event.detail.toString()
+        const dataList = this.data.dataList
+        dataList[index][name] = value
+        // this.setData({
+        //     dataList: [...dataList],
+        // })
+    },
+    onDeleteClick(event: any) {
+        const { index } = event.currentTarget.dataset
+        const dataList = this.data.dataList
+        dataList.splice(index, 1)
+        this.setData({
+            dataList: [...dataList],
+        })
+    },
+    handleAddClick() {
+        this.setData({
+            dataList: [
+                ...this.data.dataList,
+                {
+                    name: '',
+                    timeListStr: '',
+                    remark: '',
+                }
+            ]
+        })
+    },
     handleSave() {
         wx.setStorage({
             key:"timtConfig",
             data: JSON.stringify({
-                interval: +this.data.interval,
-                numberOfReminders: +this.data.numberOfReminders,
+                // interval: +this.data.interval,
+                // numberOfReminders: +this.data.numberOfReminders,
                 songPlaySeconds: +this.data.songPlaySeconds,
+                dataList: this.data.dataList
             })
         })
         Toast.success('保存成功');
