@@ -82,7 +82,6 @@
                 <van-field
                     class="inputItem"
                     input-align="right"
-                    type='number'
                     clearable
                     label="间隔(分钟)"
                     placeholder="请输入间隔(分钟)"

@@ -188,6 +188,7 @@ Page({
             activeIndex: index,
         } = this.data
         const targetMinuteList = (dataList[index].timeListStr || '')
+            .replace(/，/gi, ',')
             .split(',')
             .filter(e => e)
             .map(item => +item)
