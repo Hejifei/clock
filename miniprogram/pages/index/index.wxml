@@ -7,11 +7,16 @@
         bind:click-left="onClickLeft"
         class="topTab"
     />
+    <van-cell
+        is-link
+        title="{{columns[activeIndex].text || '请先添加定时任务'}}"
+        bind:click="showPopup"
+    />
     <view class="titleWrapper">
-        <text class="countDownLabel">目标: {{interval}}min/{{numberOfReminders}}次: </text>
+        <text class="countDownLabel">目标: {{time / 60 / 1000}}min</text>
     </view>
     <view class="titleWrapper">
-        <text class="countDownLabel">已执行: {{interval}}min/{{numberOfReminders - leftNumberOfReminders}}次: </text>
+        <text class="countDownLabel">已执行: {{recordList.length}}/{{targetMinuteList.length}}次: </text>
     </view>
     <van-count-down
         class="control-count-down"
@@ -35,9 +40,26 @@
         bind:finish="finished"
     /> -->
     <van-grid clickable column-num="3">
-        <van-grid-item text="开始" icon="play-circle-o" bindclick="start" />
-        <van-grid-item text="暂停" icon="pause-circle-o" bindclick="pause" />
-        <van-grid-item text="重置" icon="replay" bindclick="reset" />
+        <van-grid-item
+            text="开始"
+            icon="play-circle-o"
+            bindclick="start"
+        />
+        <van-grid-item
+            text="暂停"
+            icon="pause-circle-o"
+            bindclick="pause"
+        />
+        <van-grid-item
+            text="跳过"
+            icon="stop-circle-o"
+            bindclick="skip"
+        />
+        <van-grid-item 
+            text="重置"
+            icon="replay"
+            bindclick="reset"
+        />
     </van-grid>
 
     <view>
@@ -45,8 +67,8 @@
             <van-cell
                 wx:for="{{recordList}}"
                 wx:key="time"
-                value="{{item.time}}"
-                title="第{{item.num}}次"
+                value="结束时间:{{item.time}}"
+                title="第{{item.num}}次: {{item.minute}}分钟({{item.status === 'skip' ? '跳过' : '完成'}})"
                 />
         </van-cell-group>
         <!-- <view wx:for="{{recordList}}" wx:key="time">
@@ -56,12 +78,18 @@
         </view> -->
     </view>
     <van-toast id="van-toast" />
-    <van-picker 
-        show-toolbar
-        title="标题"
-        columns="{{ columns }}"
-        bind:cancel="onCancel"
-        bind:confirm="onConfirm"
-        default-index="{{activeIndex}}"
-    />
+    <van-popup 
+        show="{{ show }}"
+        position="bottom"
+        custom-style="height: 40%;"
+    >
+        <van-picker 
+            show-toolbar
+            title="标题"
+            columns="{{ columns }}"
+            bind:cancel="onCancel"
+            bind:confirm="onConfirm"
+            default-index="{{activeIndex}}"
+        />
+    </van-popup>
 </view>

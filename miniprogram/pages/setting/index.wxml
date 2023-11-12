@@ -51,7 +51,7 @@
                 type="primary"
                 bind:click="handleAddClick"
             >
-                按钮
+                新增
             </van-button>
         </view>
         <van-swipe-cell

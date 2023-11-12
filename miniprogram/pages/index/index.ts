@@ -6,10 +6,8 @@ import moment from 'moment'
 
 Page({
     data: {
-        interval: 0,
-        numberOfReminders: 3,
-        leftNumberOfReminders: 3,
-        time: 5 * 1000,
+        show: false,
+        time: 0,
         timeData: {},
         timer: null,
         recordList: [],
@@ -21,6 +19,8 @@ Page({
         }],
         columns: [],
         activeIndex: 0,
+        targetMinuteList: [0],
+        restMinuteList: [0],
     },
     // 事件处理函数
     bindViewTap() {
@@ -35,8 +35,6 @@ Page({
             key: "timtConfig",
             success(res) {
                 let resObj: {
-                    interval?: number
-                    numberOfReminders?: number
                     songPlaySeconds?: number
                     dataList?: {
                         name: string
@@ -51,25 +49,21 @@ Page({
                 }
                 const dataList = resObj?.dataList || []
                 const columns = dataList.map(item => ({
-                    text: `${item.name} 事件间隔:(${item.timeListStr})`
+                    text: `${item.name} 时间间隔:(${item.timeListStr})`
                 }))
                 that.setData({
-                    interval: resObj?.interval || 10,
-                    numberOfReminders: resObj?.numberOfReminders || 10,
-                    leftNumberOfReminders: resObj?.numberOfReminders || 10,
-                    time: (resObj?.interval || 10) * 60 * 1000,
                     songPlaySeconds: resObj?.songPlaySeconds || 10,
                     dataList,
                     columns,
+                }, () => {
+                    that.getInitCountDownValue()
                 })
             },
             fail(res) {
                 that.setData({
-                    interval: 10,
-                    numberOfReminders: 3,
-                    leftNumberOfReminders: 3,
-                    time: 10 * 60 * 1000,
                     songPlaySeconds: 10,
+                    dataList: [],
+                    columns: [],
                 })
             }
         })
@@ -80,12 +74,6 @@ Page({
         });
     },
     start() {
-        console.log({
-            leftNumberOfReminders: this.data.leftNumberOfReminders,
-        })
-        if (this.data.leftNumberOfReminders === 0) {
-            return
-        }
         const that = this;
         const countDown = this.selectComponent('.control-count-down');
         countDown.start();
@@ -95,52 +83,67 @@ Page({
         const countDown = this.selectComponent('.control-count-down');
         countDown.pause();
     },
+    skip() {
+        this.pause()
+        this.recordListAdd('skip')
 
+        const {
+            restMinuteList,
+        } = this.data
+        let time = 0
+        if (restMinuteList.length > 0) {
+            time = restMinuteList.shift()
+
+            this.setData({
+                restMinuteList,
+                time: time * 60 * 1000,
+                // time: time * 1000,
+            })
+
+            const countDown = this.selectComponent('.control-count-down');
+            countDown.reset();
+            countDown.start();
+        }
+    },
     reset() {
         const countDown = this.selectComponent('.control-count-down');
         countDown.reset();
         this.setData({
             recordList: [],
-            leftNumberOfReminders: this.data.numberOfReminders,
         })
     },
-    recordListAdd() {
+    recordListAdd(status?: string = 'finish') {
         const recordList = this.data.recordList
         recordList.push({
             time: moment().format('YYYY-MM-DD HH:mm:ss'),
             num: recordList.length + 1,
+            minute: this.data.time / 60 / 1000,
+            status,
+            // minute: this.data.time / 1000,
         })
         this.setData({
             recordList,
         })
     },
     finished() {
-        // Toast('倒计时结束');
-        const that = this;
         this.recordListAdd()
-        const leftTimes = that.data.leftNumberOfReminders - 1
-        // console.log({
-        //     leftNumberOfReminders: that.data.leftNumberOfReminders,
-        //     leftTimes,
-        //     time: this.data.time,
-        //     newtime: this.data.interval * 60 * 1000,
-        // })
-        // this.setData({
-        //     leftNumberOfReminders: leftTimes,
-        // })
-        if (leftTimes >= 0) {
-            that.setData({
-                // time: this.data.interval * 60 * 1000,
-                leftNumberOfReminders: leftTimes,
+
+        const {
+            restMinuteList,
+        } = this.data
+        let time = 0
+        if (restMinuteList.length > 0) {
+            time = restMinuteList.shift()
+
+            this.setData({
+                restMinuteList,
+                time: time * 60 * 1000,
+                // time: time * 1000,
             })
-        }
-        if (leftTimes > 0) {
-            
-            // setTimeout(() => {
-                const countDown = this.selectComponent('.control-count-down');
-                countDown.reset();
-                countDown.start();
-            // }, 1000);
+
+            const countDown = this.selectComponent('.control-count-down');
+            countDown.reset();
+            countDown.start();
         }
         
         this.playAudio()
@@ -179,16 +182,51 @@ Page({
             url: '/pages/setting/index',
         })
     },
-    onConfirm(event) {
-        const { picker, value, index } = event.detail;
-        // Toast(`当前值：${value}, 当前索引：${index}`);
-        console.log({
-            value,
-            index,
+    getInitCountDownValue() {
+        const {
+            dataList,
+            activeIndex: index,
+        } = this.data
+        const targetMinuteList = (dataList[index].timeListStr || '')
+            .split(',')
+            .filter(e => e)
+            .map(item => +item)
+        const restMinuteList = [...targetMinuteList]
+        let time = 0
+        if (restMinuteList.length > 0) {
+            time = restMinuteList.shift()
+        }
+        this.setData({
+            targetMinuteList,
+            restMinuteList,
+            time: time * 60 * 1000,
+            // time: time * 1000,
+            recordList: [],
         })
+        console.log({
+            targetMinuteList: this.data.targetMinuteList,
+        })
+    },
+    onConfirm(event) {
+        const that = this;
+        const { picker, value, index } = event.detail;
+
+        this.setData({
+            activeIndex: index,
+        }, () => {
+            that.getInitCountDownValue();
+        })
+        this.onPopupClose();
     },
     
     onCancel() {
         Toast('取消');
+        this.onPopupClose();
+    },
+    showPopup() {
+        this.setData({ show: true });
+    },
+    onPopupClose() {
+        this.setData({ show: false });
     },
 })
